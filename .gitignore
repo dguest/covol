@@ -1,0 +1,8 @@
+/bin
+/build
+/lib
+
+*.yml
+*.yaml
+*.json
+*.txt
