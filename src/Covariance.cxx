@@ -1,7 +1,5 @@
-#include "Covariance.hh"
+#include "covol/Covariance.hh"
 #include "H5Cpp.h"
-
-// #include <iostream>
 
 Covariance::Covariance(const std::vector<std::string>& vars):
   m_var_names(vars),
@@ -27,14 +25,25 @@ void Covariance::fill(const std::map<std::string, double>& vars) {
   m_entries++;
 }
 
-// Eigen::MatrixXd Covariance::getMatrix() const {
-//   // TODO: should I provide the unbiased covariance n / (n - 1)?
-//   return m_comoment;
-// }
+Eigen::MatrixXd Covariance::getMatrix() const {
+  // TODO: should I provide the unbiased covariance n / (n - 1)?
+  return m_comoment;
+}
 
-// std::vector<std::string> Covariance::getVariables() const {
-//   return m_var_names;
-// }
+std::ostream& operator<<(std::ostream& out, const Covariance& var) {
+  out << "# Variables:\n";
+  for (const auto& name: var.m_var_names) {
+    if (name.find(' ') != std::string::npos) {
+      out << "'" <<  name << "' ";
+    } else {
+      out << name << " ";
+    }
+  }
+  out << "\n";
+  out << "# Cov Matrix:\n";
+  out << var.getMatrix();
+  return out;
+}
 
 namespace {
   struct H5Variable {
