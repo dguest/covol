@@ -10,8 +10,10 @@ BUILD        := build
 SRC          := src
 INC          := include
 DICT         := dict
-OUTPUT       := bin
-LIB          := lib
+OUTPUT       := test-exe
+
+LIBDIR       := $(CURDIR)/lib
+LIBNAME      := libcovol.so
 
 #  set search path
 vpath %.cxx  $(SRC)
@@ -43,7 +45,7 @@ ALL_TOP_LEVEL := # blank, more will be added below
 
 # --- stuff used for the c++ executable
 # everything with this prefix will be built as an executable
-EXE_PREFIX   := covtest-
+EXE_PREFIX   := covol-test-
 
 ALL_EXE_SRC   := $(wildcard $(SRC)/$(EXE_PREFIX)*.cxx)
 ALL_EXE       := $(notdir $(ALL_EXE_SRC:%.cxx=%))
@@ -54,6 +56,9 @@ GEN_OBJ_PATHS := $(filter-out $(BUILD)/$(EXE_PREFIX)%.o,$(GEN_OBJ_PATHS))
 
 # add to all top level
 ALL_TOP_LEVEL += $(ALL_EXE_PATHS)
+
+# add the library
+ALL_TOP_LEVEL += $(LIBDIR)/$(LIBNAME)
 
 # _______________________________________________________________
 # Add Libraries
@@ -80,6 +85,13 @@ $(OUTPUT)/$(EXE_PREFIX)%: $(GEN_OBJ_PATHS) $(BUILD)/$(EXE_PREFIX)%.o
 	@mkdir -p $(OUTPUT)
 	@echo "linking $^ --> $@"
 	@$(CXX) -o $@ $^ $(LIBS) $(LDFLAGS)
+
+# build lib
+$(LIBDIR)/$(LIBNAME): $(GEN_OBJ_PATHS)
+	@mkdir -p $(LIBDIR)
+	@echo "linking $^ --> $@"
+	@$(CXX) -o $@ $^ $(LIBS) $(LDFLAGS) -shared
+
 
 # compile rule
 $(BUILD)/%.o: %.cxx
@@ -108,7 +120,7 @@ $(DEP)/%.d: %.cxx
 CLEANLIST     = *~ *.o *.o~ *.d core
 clean:
 	rm -fr $(CLEANLIST) $(CLEANLIST:%=$(BUILD)/%) $(CLEANLIST:%=$(DEP)/%)
-	rm -fr $(BUILD) $(DICT) $(OUTPUT)
+	rm -fr $(BUILD) $(DICT) $(OUTPUT) $(LIBDIR)
 
 rmdep:
 	rm -f $(DEP)/*.d
