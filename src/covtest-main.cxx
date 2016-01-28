@@ -3,6 +3,8 @@
 #include <iostream>
 #include <random>
 
+#include "H5Cpp.h"
+
 int main(int argc, char* argv[]) {
   int num = 10;
   if (argc > 1) num = atoi(argv[1]);
@@ -18,6 +20,7 @@ int main(int argc, char* argv[]) {
         {"pt", norm(random_gen) + rand},
         {"eta", norm(random_gen) - rand} } );
   }
-  std::cout << cov.getMatrix() << std::endl;
+  H5::H5File out_file("test.h5", H5F_ACC_TRUNC);
+  cov.write_to(out_file, "cov_matrix");
   return 0;
 }
