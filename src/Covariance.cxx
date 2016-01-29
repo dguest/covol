@@ -16,10 +16,10 @@ void Covariance::fill(const std::map<std::string, double>& vars, double wt) {
     invec(iii) = vars.at(m_var_names.at(iii));
   }
   double i = m_entries;
-  double wt_factor = wt / (i + wt);
-  VectorXd del = (invec - m_mean) * wt_factor;
-  // FIXME: this is probably all wrong...
-  MatrixXd mat_del = i * del * del.transpose() - m_comoment * wt_factor;
+  VectorXd x = invec;
+  MatrixXd mat = m_comoment;
+  VectorXd del = (x - m_mean) * wt / (i + wt);
+  MatrixXd mat_del = i / wt * del * del.transpose() - mat * wt / (i + wt);
 
   // update
   m_mean += del;
@@ -30,7 +30,7 @@ void Covariance::fill(const std::map<std::string, double>& vars, double wt) {
 Eigen::MatrixXd Covariance::getMatrix() const {
   // TODO: should I provide the unbiased covariance n / (n - 1)?
   // FIXME: do I need this?
-  return m_comoment / m_entries;
+  return m_comoment;
 }
 
 std::ostream& operator<<(std::ostream& out, const Covariance& var) {
@@ -99,6 +99,6 @@ void Covariance::write_to(H5::CommonFG& file,
   // write the file
   const auto h5type = H5::PredType::NATIVE_DOUBLE;
   auto dataset = file.createDataSet(name, h5type, ds, params);
-  dataset.write(m_comoment.data(), h5type);
+  dataset.write(getMatrix().data(), h5type);
   add_variable_attributes(dataset, m_var_names, m_mean);
 }

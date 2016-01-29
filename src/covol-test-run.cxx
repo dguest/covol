@@ -19,7 +19,7 @@ int main(int argc, char* argv[]) {
       };
   Covariance cov(vars);
   for (int iii = 0; iii < num; iii++) {
-    double rand = norm(random_gen) * 1;
+    double rand = norm(random_gen) * 0.001;
     cov.fill( {
         // {"long_long_long long", norm(random_gen)}, 
         {"pt", norm(random_gen) + rand},
@@ -28,7 +28,7 @@ int main(int argc, char* argv[]) {
         // {"3", norm(random_gen) + rand},
         // {"4", norm(random_gen) + rand},
         // {"5", norm(random_gen) + rand},
-        {"eta", norm(random_gen) - rand} }, 2 );
+        {"eta", norm(random_gen) - rand} }, 3 );
   }
   std::cout << cov << std::endl;
 
