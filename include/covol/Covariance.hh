@@ -1,6 +1,8 @@
 #ifndef COVARIANCE_HH
 #define COVARIANCE_HH
 
+#include "covol/CovVar.hh"
+
 #include <vector>
 #include <string>
 #include <map>
@@ -9,11 +11,6 @@
 namespace H5 {
   class CommonFG;
 }
-
-struct CovVar {
-  std::string name;
-  std::string units;
-};
 
 class Covariance
 {
