@@ -9,25 +9,28 @@ Covariance::Covariance(const std::vector<std::string>& vars):
 {
 }
 
-void Covariance::fill(const std::map<std::string, double>& vars) {
+void Covariance::fill(const std::map<std::string, double>& vars, double wt) {
   using namespace Eigen;
   VectorXd invec(m_mean.size());
   for (int iii = 0; iii < m_mean.size(); iii++) {
     invec(iii) = vars.at(m_var_names.at(iii));
   }
   double i = m_entries;
-  VectorXd del = (invec - m_mean) / (i + 1);
-  MatrixXd mat_del = i * del * del.transpose() - m_comoment / (i + 1);
+  double wt_factor = wt / (i + wt);
+  VectorXd del = (invec - m_mean) * wt_factor;
+  // FIXME: this is probably all wrong...
+  MatrixXd mat_del = i * del * del.transpose() - m_comoment * wt_factor;
 
   // update
   m_mean += del;
   m_comoment += mat_del;
-  m_entries++;
+  m_entries += wt;
 }
 
 Eigen::MatrixXd Covariance::getMatrix() const {
   // TODO: should I provide the unbiased covariance n / (n - 1)?
-  return m_comoment;
+  // FIXME: do I need this?
+  return m_comoment / m_entries;
 }
 
 std::ostream& operator<<(std::ostream& out, const Covariance& var) {
