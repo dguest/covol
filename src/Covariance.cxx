@@ -32,8 +32,10 @@ void Covariance::fill(const std::map<std::string, double>& vars, double wt) {
     invec(iii) = vars.at(m_vars.at(iii).name);
   }
   double i = m_entries;
-  VectorXd del = (invec - m_mean) / (i + 1);
-  MatrixXd mat_del = i * del * del.transpose() - m_comoment / (i + 1);
+  VectorXd x = invec;
+  MatrixXd mat = m_comoment;
+  VectorXd del = (x - m_mean) * wt / (i + wt);
+  MatrixXd mat_del = i / wt * del * del.transpose() - mat * wt / (i + wt);
 
   // update
   m_mean += del;
@@ -43,6 +45,7 @@ void Covariance::fill(const std::map<std::string, double>& vars, double wt) {
 
 Eigen::MatrixXd Covariance::getMatrix() const {
   // TODO: should I provide the unbiased covariance n / (n - 1)?
+  // FIXME: do I need this?
   return m_comoment;
 }
 
