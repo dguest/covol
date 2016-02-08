@@ -49,9 +49,9 @@ Eigen::MatrixXd Covariance::getMatrix() const {
   return m_comoment;
 }
 
-std::ostream& operator<<(std::ostream& out, const Covariance& var) {
+std::ostream& operator<<(std::ostream& out, const Covariance& vars) {
   out << "# Variables:\n";
-  for (const auto& var: var.m_vars) {
+  for (const auto& var: vars.m_vars) {
     const auto& name = var.name;
     if (name.find(' ') != std::string::npos) {
       out << "'" <<  name << "' ";
@@ -61,7 +61,7 @@ std::ostream& operator<<(std::ostream& out, const Covariance& var) {
   }
   out << "\n";
   out << "# Cov Matrix:\n";
-  out << var.getMatrix();
+  out << vars.getMatrix();
   return out;
 }
 
@@ -89,7 +89,7 @@ namespace {
                                const Eigen::VectorXd& means) {
     const size_t size = vars.size();
     std::vector<H5Variable> h5_vars;
-    for (int iii = 0; iii < size; iii++) {
+    for (size_t iii = 0; iii < size; iii++) {
       const auto& var = vars.at(iii);
       H5Variable hvar {var.name.c_str(), means(iii), var.units.c_str() };
       h5_vars.push_back(hvar);
